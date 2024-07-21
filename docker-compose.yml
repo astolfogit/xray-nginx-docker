@@ -5,7 +5,8 @@ services:
     volumes:
       - ./acme.sh:/acme.sh
       - ./xray/cert:/certs #Configure acme.sh to drop fullchain and privkey files to /certs
-    network_mode: host
+    ports:
+      - 80:80/tcp
     command: daemon
     stdin_open: true
     tty: true
@@ -18,7 +19,7 @@ services:
     environment:
       TZ: Europe/Moscow
     ports:
-      - 443:443
+      - 443:443/tcp
     volumes:
       - ./xray/config:/etc/xray:ro
       - ./xray/logs:/var/log/xray
@@ -29,7 +30,7 @@ services:
     container_name: vaultwarden
     restart: unless-stopped
     environment:
-       SIGNUPS_ALLOWED: "false"
+       SIGNUPS_ALLOWED: "false" #Enable these 2 variables for the initial setup
        WEB_VAULT_ENABLED: "false"
        DOMAIN: "https://my.domain/vault/"
     volumes:
