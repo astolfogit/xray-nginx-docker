@@ -1,7 +1,10 @@
 # xray-nginx-docker
 Xray + Vaultwarden + AdguardHome w/ nginx reverse proxy and acme.sh via Docker compose
 
-First read the comments i left, edit each config file to your liking (don't forget to replace my.domain with your domain). Use `sudo docker exec acme.sh --command` to set up certificate issue and renewal. Recommended way - https://github.com/acmesh-official/acme.sh/wiki/dnsapi#dns_cf
+Skim through the config files first and edit all the necessary variables
+Adguard Home requires 3000:3000/tcp to be allowed for the initial setup (add it next to 853:853, remove after you're done)
+Run with `sudo docker compose up -d`. Use `sudo docker exec acme.sh --command` to set up certificate issue and renewal. Recommended way - https://github.com/acmesh-official/acme.sh/wiki/dnsapi#dns_cf
+Restart and set everything else up
 
 update-containers.sh does exactly what it says (pulls the latest tag, rebuilds containers if needed and removes redundant images)
 
