@@ -8,6 +8,8 @@ Xray + Vaultwarden + AdguardHome w/ nginx reverse proxy and acme.sh via Docker c
 
 update-containers.sh does exactly what it says (pulls the latest tag, rebuilds containers if needed and removes redundant images)
 
+Adguard automatically redirects to /login.html page though it's actually accessible at /adguard/login.html.
+
 Sources:
 - Xray examples - https://github.com/XTLS/Xray-examples/tree/main/VLESS-TCP-XTLS-Vision
 - Vaultwarden - https://github.com/dani-garcia/vaultwarden/wiki/Using-Docker-Compose
