@@ -1,6 +1,7 @@
 {
     "log": {
         "loglevel": "warning"
+        "error": "/var/log/xray/error.log"
     },
     "routing": {
         "domainStrategy": "IPIfNonMatch",
