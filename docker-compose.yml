@@ -1,0 +1,70 @@
+services:
+  acme-sh:
+    image: neilpang/acme.sh:latest
+    container_name: acme.sh
+    volumes:
+      - ./acme.sh:/acme.sh
+      - ./xray/cert:/certs #Configure acme.sh to drop fullchain and privkey files to /certs
+    network_mode: host
+    command: daemon
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+
+  xray:
+    image: teddysun/xray:latest
+    container_name: xray
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Moscow
+    ports:
+      - 443:443/tcp
+    volumes:
+      - ./xray/config:/etc/xray:ro
+      - ./xray/logs:/var/log/xray
+      - ./xray/cert:/certs:ro
+
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+       SIGNUPS_ALLOWED: "false" #Enable these 2 variables for the initial setup
+       WEB_VAULT_ENABLED: "false"
+       DOMAIN: "https://vault.example.com/"
+    volumes:
+      - ./vaultwarden:/data
+
+  nginx:
+    image: nginx:latest
+    restart: unless-stopped
+    # external_links:
+     # - affine_selfhosted:affine
+    ports:
+      - 80:80/tcp
+    volumes:
+      - ./nginx/nginx.log:/var/log/nginx/error.log
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/reverseproxy.conf:ro
+    command: [nginx-debug, "-g", "daemon off;"]
+
+  adguardhome:
+    image: adguard/adguardhome:latest
+    container_name: adguardhome
+    environment:
+       DOMAIN: "https://dns.example.com/"
+    volumes:
+      - ./adguard/conf:/opt/adguardhome/conf
+      - ./adguard/work:/opt/adguardhome/work
+      - ./xray/cert:/certs:ro
+    ports:
+        - 853:853/tcp
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adguardhome.entrypoints=insecure"
+      - "traefik.http.routers.adguardhome.rule=Host(`$DOMAIN`)"
+      - "traefik.http.services.adguardhome.loadbalancer.server.port=3000"
+
+networks:
+ default:
+  name: proxy
